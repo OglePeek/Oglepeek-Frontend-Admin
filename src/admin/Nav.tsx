@@ -24,7 +24,7 @@ export const Nav = () => {
         <Toolbar />
         <Divider />
         <List>
-          {["UI Icon", "Add Item", "Edit Item"].map((text, index) => (
+          {["Dashboard", "Add Item", "Edit Item"].map((text, index) => (
             <ListItem key={index} disablePadding>
               <ListItemButton>
                 <ListItemIcon>

@@ -1,5 +1,6 @@
 import { Box, Container } from "@mui/material";
 import { Nav } from "./Nav";
+import { AddItemForm } from "./AddItemForm";
 
 // type Props = {
 // }
@@ -7,11 +8,17 @@ import { Nav } from "./Nav";
 export const Admin = () => {
   return (
     <div>
-      <Container maxWidth="xl">
-        <Box sx={{ display: "flex" }}>
+      <Box className="flex">
+        {/* Sidebar or Nav */}
+        <Box className="w-1/4">
           <Nav />
         </Box>
-      </Container>
+
+        {/* Full width Form Area */}
+        <Box className="w-full bg-neutral-100 p-6">
+          <AddItemForm />
+        </Box>
+      </Box>
     </div>
   );
 };

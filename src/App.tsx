@@ -1,13 +1,12 @@
-import './App.css'
-import { Admin } from './admin/Admin'
+import "./App.css";
+import { Admin } from "./admin/Admin";
 
 function App() {
-  
   return (
     <>
-        <Admin/>
+      <Admin />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
