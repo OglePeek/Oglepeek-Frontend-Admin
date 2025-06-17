@@ -3,6 +3,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { TextInput } from "./TextInput";
 import { Button } from "@mui/material";
+import { DropdownInput } from "./DropdownInput";
 
 // type Props = {
 
@@ -72,10 +73,20 @@ export const AddItemForm = () => {
           </div>
 
           <div>
-            <TextInput
+            <DropdownInput
               label={"style"}
               {...register("style")}
               error={!!errors.style}
+              items={[
+                { value: "Round", label: "Round" },
+                { value: "Square", label: "Square" },
+                { value: "cat-eye", label: "cat-eye" },
+                { value: "oversized", label: "oversized" },
+                { value: "clock-master", label: "clock-master" },
+                { value: "shield", label: "shield" },
+                { value: "aviator", label: "aviator" },
+                { value: "waifer", label: "waifer" },
+              ]}
               helperText={errors.style?.message}
             />
           </div>
@@ -88,6 +99,109 @@ export const AddItemForm = () => {
               error={!!errors.description}
               helperText={errors.description?.message}
               multiline
+              rows={4}
+            />
+          </div>
+
+          <div>
+            <DropdownInput
+              label={"lens"}
+              {...register("lens")}
+              error={!!errors.lens}
+              items={[
+                { value: "Polarised", label: "Round" },
+                { value: "Photochromic", label: "Photochromic" },
+                { value: "Gradient", label: "Gradient" },
+                { value: "Tinted", label: "Tinted" },
+                { value: "Transparent-Lens", label: "Transparent-Lens" },
+                { value: "UV-400 protection", label: "UV-400 protection" },
+              ]}
+              helperText={errors.lens?.message}
+            />
+          </div>
+
+          <div>
+            <DropdownInput
+              label={"material"}
+              {...register("material")}
+              error={!!errors.material}
+              items={[
+                { value: "Metal", label: "Metal" },
+                { value: "Acetate", label: "Acetate" },
+                { value: "TR90", label: "TR90" },
+                { value: "Wooden", label: "Wooden," },
+                { value: "Mix-Material", label: "Mix-Material" },
+              ]}
+              helperText={errors.material?.message}
+            />
+          </div>
+
+          <div>
+            <DropdownInput
+              label={"gender"}
+              {...register("gender")}
+              error={!!errors.gender}
+              items={[
+                { value: "Man", label: "Man" },
+                { value: "Woman", label: "Woman" },
+                { value: "Unisex", label: "Unisex" },
+              ]}
+              helperText={errors.gender?.message}
+            />
+          </div>
+
+          <div>
+            <TextInput
+              label={"colorName"}
+              defaultValue="colorName"
+              {...register("colorName")}
+              error={!!errors.colorName}
+              helperText={errors.colorName?.message}
+            />
+          </div>
+
+          <div>
+            <TextInput
+              label={"inStock"}
+              defaultValue="inStock"
+              {...register("inStock")}
+              error={!!errors.inStock}
+              helperText={errors.inStock?.message}
+            />
+          </div>
+
+          <div>
+            <TextInput
+              label={"images"}
+              defaultValue="images"
+              {...register("images")}
+              error={!!errors.images}
+              helperText={errors.images?.message}
+            />
+          </div>
+
+          <div>
+            <TextInput
+              label={"price"}
+              defaultValue="price"
+              {...register("price")}
+              error={!!errors.price}
+              helperText={errors.price?.message}
+            />
+          </div>
+
+          <div>
+            <DropdownInput
+              label={"size"}
+              {...register("size")}
+              error={!!errors.size}
+              items={[
+                { value: "Round", label: "Man" },
+                { value: "Square", label: "Woman" },
+                { value: "Oval", label: "Unisex" },
+                { value: "Heart-Shape", label: "Heart-Shape" },
+              ]}
+              helperText={errors.size?.message}
             />
           </div>
 
