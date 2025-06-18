@@ -3,37 +3,28 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
 type Props = {
   title: string;
-  contentText: string;
   fieldform: React.ReactNode;
+  openform: boolean;
+  closeform: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const DialogBox = ({ title, contentText, fieldform }: Props) => {
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
+export const DialogBox = ({ title, fieldform, openform, closeform }: Props) => {
   const handleClose = () => {
-    setOpen(false);
+    closeform(false);
   };
 
   return (
     <React.Fragment>
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={openform} onClose={handleClose}>
         <DialogTitle>{title}</DialogTitle>
-        <DialogContent>
-          <DialogContentText>{contentText}</DialogContentText>
-          {fieldform}
-        </DialogContent>
+        <DialogContent>{fieldform}</DialogContent>
         <DialogActions>
+          <Button type="submit">Add</Button>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button type="submit">Subscribe</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>

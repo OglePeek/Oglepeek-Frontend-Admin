@@ -17,6 +17,7 @@ export const DropdownInput: React.FC<Props> = ({ label, items, ...fields }) => {
       id="outlined-size-small"
       variant="outlined"
       size="small"
+      defaultValue=""
       className="w-full"
       select
       {...fields}

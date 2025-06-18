@@ -4,6 +4,9 @@ import * as yup from "yup";
 import { TextInput } from "./TextInput";
 import { Button } from "@mui/material";
 import { DropdownInput } from "./DropdownInput";
+import { useState } from "react";
+import { DialogBox } from "./DialogBox";
+import { AddVariantForm } from "./AddVariantForm";
 
 // type Props = {
 
@@ -17,26 +20,19 @@ const schema = yup
     lens: yup.string().required(),
     gender: yup.string().required(),
     material: yup.string().required(),
-    colorName: yup.string().required(),
-    inStock: yup.number().positive().integer().required(),
     images: yup.array().required(),
-    price: yup.number().positive().integer().required(),
-    size: yup.string().required(),
   })
   .required();
 
 export const AddItemForm = () => {
+  const [openVariantForm, setOpenVariantForm] = useState(false);
+
   type FormValues = yup.InferType<typeof schema>;
 
   const {
-    // register: function to register input elements
     register,
-    // handleSubmit: function to handle form submission
     handleSubmit,
-    // watch: function to watch values of form inputs
-    watch,
-    // formState: object containing information about form state
-    formState: { errors, touchedFields }, // Destructure errors and touchedFields from formState
+    formState: { errors },
   } = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -46,16 +42,16 @@ export const AddItemForm = () => {
       lens: "",
       gender: "",
       material: "",
-      colorName: "",
-      inStock: 0,
       images: [],
-      price: 0,
-      size: "",
     },
   });
 
   const onSubmit = (data: FormValues) => {
     console.log(data); // call api with submitted data
+  };
+
+  const openDialog = () => {
+    setOpenVariantForm(true);
   };
 
   return (
@@ -88,18 +84,6 @@ export const AddItemForm = () => {
                 { value: "waifer", label: "waifer" },
               ]}
               helperText={errors.style?.message}
-            />
-          </div>
-
-          <div>
-            <TextInput
-              label={"description"}
-              defaultValue="description"
-              {...register("description")}
-              error={!!errors.description}
-              helperText={errors.description?.message}
-              multiline
-              rows={4}
             />
           </div>
 
@@ -152,26 +136,6 @@ export const AddItemForm = () => {
 
           <div>
             <TextInput
-              label={"colorName"}
-              defaultValue="colorName"
-              {...register("colorName")}
-              error={!!errors.colorName}
-              helperText={errors.colorName?.message}
-            />
-          </div>
-
-          <div>
-            <TextInput
-              label={"inStock"}
-              defaultValue="inStock"
-              {...register("inStock")}
-              error={!!errors.inStock}
-              helperText={errors.inStock?.message}
-            />
-          </div>
-
-          <div>
-            <TextInput
               label={"images"}
               defaultValue="images"
               {...register("images")}
@@ -182,36 +146,45 @@ export const AddItemForm = () => {
 
           <div>
             <TextInput
-              label={"price"}
-              defaultValue="price"
-              {...register("price")}
-              error={!!errors.price}
-              helperText={errors.price?.message}
+              label={"description"}
+              defaultValue="description"
+              {...register("description")}
+              error={!!errors.description}
+              helperText={errors.description?.message}
+              multiline
+              rows={4}
             />
           </div>
+        </div>
 
-          <div>
-            <DropdownInput
-              label={"size"}
-              {...register("size")}
-              error={!!errors.size}
-              items={[
-                { value: "Round", label: "Man" },
-                { value: "Square", label: "Woman" },
-                { value: "Oval", label: "Unisex" },
-                { value: "Heart-Shape", label: "Heart-Shape" },
-              ]}
-              helperText={errors.size?.message}
-            />
+        <div className="grid grid-cols-3 justify-items-start">
+          <div className=" py-4">
+            <Button variant="contained" type="button" onClick={openDialog}>
+              Add Variant
+            </Button>
           </div>
-
-          <div>
+          <div className=" py-4">
             <Button variant="contained" type="submit">
-              Submit
+              Add Item
             </Button>
           </div>
         </div>
       </form>
+
+      <div>
+        {openVariantForm ? (
+          <>
+            <DialogBox
+              title="Add Variant"
+              fieldform={<AddVariantForm />}
+              openform={openVariantForm}
+              closeform={setOpenVariantForm}
+            ></DialogBox>
+          </>
+        ) : (
+          <></>
+        )}
+      </div>
     </>
   );
 };
