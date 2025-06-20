@@ -7,6 +7,9 @@ import { DropdownInput } from "./DropdownInput";
 import { useState } from "react";
 import { DialogBox } from "./DialogBox";
 import { AddVariantForm } from "./AddVariantForm";
+import type { AppDispatch } from "../redux/store";
+import { resetFormData } from "../redux/formslice";
+import { useDispatch } from "react-redux";
 
 // type Props = {
 
@@ -25,6 +28,8 @@ const schema = yup
   .required();
 
 export const AddItemForm = () => {
+  const dispatch = useDispatch<AppDispatch>();
+
   const [openVariantForm, setOpenVariantForm] = useState(false);
 
   type FormValues = yup.InferType<typeof schema>;
@@ -52,6 +57,10 @@ export const AddItemForm = () => {
 
   const openDialog = () => {
     setOpenVariantForm(true);
+  };
+
+  const clearForm = () => {
+    dispatch(resetFormData());
   };
 
   return (
@@ -166,6 +175,11 @@ export const AddItemForm = () => {
           <div className=" py-4">
             <Button variant="contained" type="submit">
               Add Item
+            </Button>
+          </div>
+          <div className=" py-4">
+            <Button variant="contained" type="button" onClick={clearForm}>
+              Clear
             </Button>
           </div>
         </div>
