@@ -3,6 +3,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { TextInput } from "./TextInput";
 import { Button } from "@mui/material";
+import { DropdownInput } from "./DropdownInput";
+import { useState } from "react";
+import { DialogBox } from "./DialogBox";
+import { AddVariantForm } from "./AddVariantForm";
 
 // type Props = {
 
@@ -16,26 +20,19 @@ const schema = yup
     lens: yup.string().required(),
     gender: yup.string().required(),
     material: yup.string().required(),
-    colorName: yup.string().required(),
-    inStock: yup.number().positive().integer().required(),
     images: yup.array().required(),
-    price: yup.number().positive().integer().required(),
-    size: yup.string().required(),
   })
   .required();
 
 export const AddItemForm = () => {
+  const [openVariantForm, setOpenVariantForm] = useState(false);
+
   type FormValues = yup.InferType<typeof schema>;
 
   const {
-    // register: function to register input elements
     register,
-    // handleSubmit: function to handle form submission
     handleSubmit,
-    // watch: function to watch values of form inputs
-    watch,
-    // formState: object containing information about form state
-    formState: { errors, touchedFields }, // Destructure errors and touchedFields from formState
+    formState: { errors },
   } = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -45,16 +42,16 @@ export const AddItemForm = () => {
       lens: "",
       gender: "",
       material: "",
-      colorName: "",
-      inStock: 0,
       images: [],
-      price: 0,
-      size: "",
     },
   });
 
   const onSubmit = (data: FormValues) => {
     console.log(data); // call api with submitted data
+  };
+
+  const openDialog = () => {
+    setOpenVariantForm(true);
   };
 
   return (
@@ -72,11 +69,78 @@ export const AddItemForm = () => {
           </div>
 
           <div>
-            <TextInput
+            <DropdownInput
               label={"style"}
               {...register("style")}
               error={!!errors.style}
+              items={[
+                { value: "Round", label: "Round" },
+                { value: "Square", label: "Square" },
+                { value: "cat-eye", label: "cat-eye" },
+                { value: "oversized", label: "oversized" },
+                { value: "clock-master", label: "clock-master" },
+                { value: "shield", label: "shield" },
+                { value: "aviator", label: "aviator" },
+                { value: "waifer", label: "waifer" },
+              ]}
               helperText={errors.style?.message}
+            />
+          </div>
+
+          <div>
+            <DropdownInput
+              label={"lens"}
+              {...register("lens")}
+              error={!!errors.lens}
+              items={[
+                { value: "Polarised", label: "Round" },
+                { value: "Photochromic", label: "Photochromic" },
+                { value: "Gradient", label: "Gradient" },
+                { value: "Tinted", label: "Tinted" },
+                { value: "Transparent-Lens", label: "Transparent-Lens" },
+                { value: "UV-400 protection", label: "UV-400 protection" },
+              ]}
+              helperText={errors.lens?.message}
+            />
+          </div>
+
+          <div>
+            <DropdownInput
+              label={"material"}
+              {...register("material")}
+              error={!!errors.material}
+              items={[
+                { value: "Metal", label: "Metal" },
+                { value: "Acetate", label: "Acetate" },
+                { value: "TR90", label: "TR90" },
+                { value: "Wooden", label: "Wooden," },
+                { value: "Mix-Material", label: "Mix-Material" },
+              ]}
+              helperText={errors.material?.message}
+            />
+          </div>
+
+          <div>
+            <DropdownInput
+              label={"gender"}
+              {...register("gender")}
+              error={!!errors.gender}
+              items={[
+                { value: "Man", label: "Man" },
+                { value: "Woman", label: "Woman" },
+                { value: "Unisex", label: "Unisex" },
+              ]}
+              helperText={errors.gender?.message}
+            />
+          </div>
+
+          <div>
+            <TextInput
+              label={"images"}
+              defaultValue="images"
+              {...register("images")}
+              error={!!errors.images}
+              helperText={errors.images?.message}
             />
           </div>
 
@@ -88,16 +152,39 @@ export const AddItemForm = () => {
               error={!!errors.description}
               helperText={errors.description?.message}
               multiline
+              rows={4}
             />
           </div>
+        </div>
 
-          <div>
+        <div className="grid grid-cols-3 justify-items-start">
+          <div className=" py-4">
+            <Button variant="contained" type="button" onClick={openDialog}>
+              Add Variant
+            </Button>
+          </div>
+          <div className=" py-4">
             <Button variant="contained" type="submit">
-              Submit
+              Add Item
             </Button>
           </div>
         </div>
       </form>
+
+      <div>
+        {openVariantForm ? (
+          <>
+            <DialogBox
+              title="Add Variant"
+              fieldform={<AddVariantForm />}
+              openform={openVariantForm}
+              closeform={setOpenVariantForm}
+            ></DialogBox>
+          </>
+        ) : (
+          <></>
+        )}
+      </div>
     </>
   );
 };
