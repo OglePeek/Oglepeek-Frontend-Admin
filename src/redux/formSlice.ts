@@ -2,33 +2,28 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
+interface Variant {
+  colorName: string;
+  inStock: number;
+  price: number;
+  size: string;
+}
+
 interface FormState {
-  addVariantForm: {
-    colorName: string;
-    inStock: number;
-    price: number;
-    size: string;
-  };
+  addVariantForm: Variant[]; // now stores an array of variants
 }
 
 const initialState: FormState = {
-  addVariantForm: {
-    colorName: "",
-    inStock: 0,
-    price: 0,
-    size: "",
-  },
+  addVariantForm: [],
 };
 
 export const formSlice = createSlice({
   name: "form",
   initialState,
   reducers: {
-    saveFormData: (
-      state,
-      action: PayloadAction<FormState["addVariantForm"]>
-    ) => {
-      return { ...state, ...action.payload };
+    saveFormData: (state, action: PayloadAction<Variant>) => {
+      state.addVariantForm = [...state.addVariantForm, action.payload];
+      console.log("Saved:", action.payload);
     },
     resetFormData: () => initialState,
   },

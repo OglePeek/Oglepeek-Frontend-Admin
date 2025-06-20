@@ -4,8 +4,9 @@ import * as yup from "yup";
 import { DropdownInput } from "./DropdownInput";
 import { TextInput } from "./TextInput";
 import { useDispatch } from "react-redux";
-import { saveFormData } from "../redux/formslice";
 import { Button } from "@mui/material";
+import { saveFormData } from "../redux/formslice";
+import type { AppDispatch } from "../redux/store";
 
 // type Props = {
 
@@ -21,7 +22,7 @@ const schema = yup
   .required();
 
 export const AddVariantForm = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   type FormValues = yup.InferType<typeof schema>;
 
@@ -40,7 +41,7 @@ export const AddVariantForm = () => {
   });
 
   const saveToRedux = (data: FormValues) => {
-    console.log(data);
+    // console.log(data);
     dispatch(saveFormData(data));
   };
 
@@ -94,7 +95,9 @@ export const AddVariantForm = () => {
           </div>
         </div>
         <div>
-          <Button type="submit">Add</Button>
+          <Button type="submit" variant="contained">
+            Add
+          </Button>
         </div>
       </form>
     </div>
