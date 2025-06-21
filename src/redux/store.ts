@@ -13,6 +13,7 @@ import {
   REGISTER,
 } from "redux-persist";
 import { combineReducers } from "redux";
+import { api } from "../services/api"; // adjust the path
 
 const persistConfig = {
   key: "root",
@@ -22,6 +23,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   form: formReducer,
+  [api.reducerPath]: api.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -33,7 +35,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }),
+    }).concat(api.middleware), // add the api middleware
 });
 
 export const persistor = persistStore(store);
