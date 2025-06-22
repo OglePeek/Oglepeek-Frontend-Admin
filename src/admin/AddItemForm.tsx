@@ -99,7 +99,7 @@ export const AddItemForm = () => {
     formData.append("variants", JSON.stringify(variantVals));
 
     data.images.forEach((file, index) => {
-      formData.append(`image${index}`, file);
+      formData.append(`images${index}`, file);
     });
 
     for (const [key, value] of formData.entries()) {
