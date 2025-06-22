@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 interface Variant {
-  colorName: string;
+  frameColor: string;
   inStock: number;
   price: number;
   size: string;

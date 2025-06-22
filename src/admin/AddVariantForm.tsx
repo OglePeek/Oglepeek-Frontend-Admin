@@ -14,7 +14,7 @@ import type { AppDispatch } from "../redux/store";
 
 const schema = yup
   .object({
-    colorName: yup.string().required(),
+    frameColor: yup.string().required(),
     inStock: yup.number().positive().integer().required(),
     price: yup.number().positive().integer().required(),
     size: yup.string().required(),
@@ -33,7 +33,7 @@ export const AddVariantForm = () => {
   } = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues: {
-      colorName: "",
+      frameColor: "",
       inStock: 0,
       price: 0,
       size: "",
@@ -51,11 +51,11 @@ export const AddVariantForm = () => {
         <div className="grid grid-cols-3 gap-4 py-4">
           <div>
             <TextInput
-              label={"colorName"}
-              defaultValue="colorName"
-              {...register("colorName")}
-              error={!!errors.colorName}
-              helperText={errors.colorName?.message}
+              label={"frameColor"}
+              defaultValue="frameColor"
+              {...register("frameColor")}
+              error={!!errors.frameColor}
+              helperText={errors.frameColor?.message}
             />
           </div>
 

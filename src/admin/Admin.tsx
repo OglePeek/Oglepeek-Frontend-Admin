@@ -11,7 +11,7 @@ import type { RootState } from "../redux/store";
 
 const cols: GridColDef[] = [
   { field: "id", headerName: "ID", width: 90 },
-  { field: "colorName", headerName: "Color", width: 150 },
+  { field: "frameColor", headerName: "Frame Color", width: 150 },
   { field: "inStock", headerName: "In Stock", width: 150 },
   { field: "price", headerName: "Price", width: 110 },
   { field: "size", headerName: "Size", width: 110 },
@@ -26,7 +26,7 @@ export const Admin = () => {
   const tablerows = variantVals?.map((item, index) => {
     return {
       id: index,
-      colorName: item.colorName,
+      frameColor: item.frameColor,
       inStock: item.inStock,
       price: item.price,
       size: item.size,
