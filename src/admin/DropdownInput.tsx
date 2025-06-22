@@ -14,7 +14,6 @@ export const DropdownInput: React.FC<Props> = ({ label, items, ...fields }) => {
   return (
     <TextField
       label={label}
-      id="outlined-size-small"
       variant="outlined"
       size="small"
       defaultValue=""
