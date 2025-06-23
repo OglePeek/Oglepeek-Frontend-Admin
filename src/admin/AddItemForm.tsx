@@ -13,6 +13,8 @@ import { useDispatch, useSelector } from "react-redux";
 import FileUploadInput from "./FileUploadInput";
 import type { RootState } from "../redux/store";
 import { useAddProductMutation } from "../services/api";
+import { GenericDataGrid } from "./GenericDataGrid";
+import type { GridColDef } from "@mui/x-data-grid";
 
 // type Props = {
 
@@ -32,10 +34,28 @@ const schema = yup
   })
   .required();
 
+const cols: GridColDef[] = [
+  { field: "id", headerName: "ID", width: 90 },
+  { field: "frameColor", headerName: "Frame Color", width: 150 },
+  { field: "inStock", headerName: "In Stock", width: 150 },
+  { field: "price", headerName: "Price", width: 110 },
+  { field: "size", headerName: "Size", width: 110 },
+];
+
 export const AddItemForm = () => {
   const variantVals = useSelector(
     (state: RootState) => state?.form?.addVariantForm
   );
+
+  const tablerows = variantVals?.map((item, index) => {
+    return {
+      id: index,
+      frameColor: item.frameColor,
+      inStock: item.inStock,
+      price: item.price,
+      size: item.size,
+    };
+  });
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -68,24 +88,6 @@ export const AddItemForm = () => {
   const [addProduct] = useAddProductMutation();
 
   const onSubmit = (data: FormValues) => {
-    // const imageObj: Record<string, File> = {};
-
-    // data.images.forEach((file, index) => {
-    //   imageObj[`image${index}`] = file;
-    // });
-    // const reqBody = {
-    //   name: data.name,
-    //   frameStyle: data.frameStyle,
-    //   description: data.description,
-    //   lens: data.lens,
-    //   gender: data.gender,
-    //   material: data.material,
-    //   productType: data.productType,
-    //   frameType: data.frameType,
-    //   variants: variantVals,
-    //   ...imageObj,
-    // };
-
     const formData = new FormData();
 
     formData.append("name", data.name);
@@ -109,15 +111,6 @@ export const AddItemForm = () => {
     addProduct(formData)
       .then((res) => console.log("Item added:", res))
       .catch((err) => console.error("Error adding item:", err));
-
-    // console.log("Request Body:", reqBody);
-    // addProduct(reqBody)
-    //   .then((response) => {
-    //     console.log("Item added:", response);
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error adding item:", error);
-    //   });
   };
 
   const openDialog = () => {
@@ -287,6 +280,15 @@ export const AddItemForm = () => {
         ) : (
           <></>
         )}
+      </div>
+
+      <div>
+        <GenericDataGrid
+          rows={tablerows ? tablerows : []}
+          columns={cols}
+          pageSize={5}
+          checkboxSelection={true}
+        />
       </div>
     </>
   );

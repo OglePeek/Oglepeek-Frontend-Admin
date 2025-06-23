@@ -1,60 +1,89 @@
-import { Box } from "@mui/material";
-import { Nav } from "./Nav";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import { createTheme } from "@mui/material/styles";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { AppProvider, type Navigation } from "@toolpad/core/AppProvider";
+import { DashboardLayout } from "@toolpad/core/DashboardLayout";
+import { DemoProvider, useDemoRouter } from "@toolpad/core/internal";
 import { AddItemForm } from "./AddItemForm";
-import { GenericDataGrid } from "./GenericDataGrid";
-import type { GridColDef } from "@mui/x-data-grid";
-import { useSelector } from "react-redux";
-import type { RootState } from "../redux/store";
 
-// type Props = {
-// }
-
-const cols: GridColDef[] = [
-  { field: "id", headerName: "ID", width: 90 },
-  { field: "frameColor", headerName: "Frame Color", width: 150 },
-  { field: "inStock", headerName: "In Stock", width: 150 },
-  { field: "price", headerName: "Price", width: 110 },
-  { field: "size", headerName: "Size", width: 110 },
+const NAVIGATION: Navigation = [
+  {
+    segment: "dashboard",
+    title: "Dashboard",
+    icon: <DashboardIcon />,
+  },
+  {
+    segment: "product",
+    title: "Products",
+    icon: <ShoppingCartIcon />,
+  },
 ];
 
-export const Admin = () => {
-  const variantVals = useSelector(
-    (state: RootState) => state?.form?.addVariantForm
-  );
-  console.log(variantVals);
+const demoTheme = createTheme({
+  cssVariables: {
+    colorSchemeSelector: "data-toolpad-color-scheme",
+  },
+  colorSchemes: { light: true, dark: true },
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 600,
+      lg: 1200,
+      xl: 1536,
+    },
+  },
+});
 
-  const tablerows = variantVals?.map((item, index) => {
-    return {
-      id: index,
-      frameColor: item.frameColor,
-      inStock: item.inStock,
-      price: item.price,
-      size: item.size,
-    };
-  });
+function DemoPageContent({ pathname }: { pathname: string }) {
+  if (pathname === "/product") {
+    return (
+      <Box sx={{ py: 4, px: 6 }}>
+        <Typography variant="h5" mb={2}>
+          Add Product
+        </Typography>
+        <AddItemForm />
+      </Box>
+    );
+  }
+  // Default dashboard content
+  return (
+    <Box
+      sx={{
+        py: 4,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        textAlign: "center",
+      }}
+    >
+      <Typography variant="h5">Welcome to the Dashboard</Typography>
+    </Box>
+  );
+}
+
+export const Admin = () => {
+  const router = useDemoRouter("/dashboard");
 
   return (
-    <div className="w-full bg-amber-200">
-      <Box className="flex flex-col-reverse">
-        {/* Sidebar or Nav */}
-        <Box className="w-1/4">
-          <Nav />
-        </Box>
-
-        {/* Full width Form Area */}
-        <Box className="w-full bg-neutral-100 p-6">
-          <AddItemForm />
-        </Box>
-      </Box>
-
-      <div className="p-4">
-        <GenericDataGrid
-          rows={tablerows ? tablerows : []}
-          columns={cols}
-          pageSize={5}
-          checkboxSelection={true}
-        />
-      </div>
-    </div>
+    <DemoProvider>
+      <AppProvider
+        navigation={NAVIGATION}
+        branding={{
+          logo: <img src="https://mui.com/static/logo.png" alt="MUI logo" />,
+          title: "OglePeek Admin",
+          homeUrl: "/toolpad/core/introduction",
+        }}
+        router={router}
+        theme={demoTheme}
+        // window={demoWindow}
+      >
+        <DashboardLayout>
+          <DemoPageContent pathname={router.pathname} />
+        </DashboardLayout>
+      </AppProvider>
+    </DemoProvider>
   );
 };
