@@ -6,14 +6,15 @@ type Props = TextFieldProps & {
 
 export const TextInput: React.FC<Props> = ({ label, ...fields }) => {
   return (
-    <div>
+    <>
       <TextField
+        sx={{ width: "full" }}
         label={label}
-        id="outlined-size-small"
+        id="outlined-size-small" 
         variant="outlined"
         size="small"
-        {...fields}
+        {...fields} 
       />
-    </div>
+    </>
   );
 };

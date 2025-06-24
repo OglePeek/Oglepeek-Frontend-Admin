@@ -127,20 +127,19 @@ export const AddItemForm = () => {
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-3 gap-4">
-            <div>
+            <>
               <TextInput
                 label={"name"}
-                defaultValue="name"
                 {...register("name")}
                 error={!!errors.name}
                 helperText={errors.name?.message}
               />
-            </div>
+            </>
 
             <div>
               <DropdownInput
                 label={"frameStyle"}
-                {...register("frameStyle")}
+                name="frameStyle"
                 error={!!errors.frameStyle}
                 items={[
                   { value: "Round", label: "Round" },
@@ -159,7 +158,7 @@ export const AddItemForm = () => {
             <div>
               <DropdownInput
                 label={"productType"}
-                {...register("productType")}
+                name="productType"
                 error={!!errors.productType}
                 items={[
                   { value: "Eyeglasses", label: "Eyeglasses" },
@@ -172,7 +171,7 @@ export const AddItemForm = () => {
             <div>
               <DropdownInput
                 label={"frameType"}
-                {...register("frameType")}
+                name="frameType"
                 error={!!errors.frameType}
                 items={[
                   { value: "Full Rim", label: "Full Rim" },
@@ -186,7 +185,7 @@ export const AddItemForm = () => {
             <div>
               <DropdownInput
                 label={"lens"}
-                {...register("lens")}
+                name="lens"
                 error={!!errors.lens}
                 items={[
                   { value: "Polarised", label: "Round" },
@@ -203,7 +202,7 @@ export const AddItemForm = () => {
             <div>
               <DropdownInput
                 label={"material"}
-                {...register("material")}
+                name="material"
                 error={!!errors.material}
                 items={[
                   { value: "Metal", label: "Metal" },
@@ -219,7 +218,7 @@ export const AddItemForm = () => {
             <div>
               <DropdownInput
                 label={"gender"}
-                {...register("gender")}
+                name="gender"
                 error={!!errors.gender}
                 items={[
                   { value: "Man", label: "Man" },
@@ -230,17 +229,16 @@ export const AddItemForm = () => {
               />
             </div>
 
-            <div>
+            <>
               <TextInput
                 label={"description"}
-                defaultValue="description"
-                {...register("description")}
+                name="description"
                 error={!!errors.description}
                 helperText={errors.description?.message}
                 multiline
                 rows={4}
               />
-            </div>
+            </>
 
             <div>
               <FileUploadInput />
