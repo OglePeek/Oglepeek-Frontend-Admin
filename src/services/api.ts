@@ -23,6 +23,9 @@ export const api = createApi({
         url: "product",
         method: "POST",
         body,
+        headers: {
+          Authorization: `Bearer ${"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjg1NmVhMTFmMDhjZTI1NmM2NzAwNGM3In0sImlhdCI6MTc1MDYxNTQxNiwiZXhwIjoxNzUwNjE5MDE2fQ.07ByVC_zv2ZBPvGxJOU3RA7-AMQ3iJzRLEiG2uct5fM"}`, // Replace with your actual token
+        },
       }),
     }),
   }),

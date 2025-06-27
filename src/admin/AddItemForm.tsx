@@ -13,6 +13,8 @@ import { useDispatch, useSelector } from "react-redux";
 import FileUploadInput from "./FileUploadInput";
 import type { RootState } from "../redux/store";
 import { useAddProductMutation } from "../services/api";
+import { GenericDataGrid } from "./GenericDataGrid";
+import type { GridColDef } from "@mui/x-data-grid";
 
 // type Props = {
 
@@ -21,19 +23,39 @@ import { useAddProductMutation } from "../services/api";
 const schema = yup
   .object({
     name: yup.string().required(),
-    style: yup.string().required(),
+    frameStyle: yup.string().required(),
     description: yup.string().required(),
     lens: yup.string().required(),
     gender: yup.string().required(),
     material: yup.string().required(),
     images: yup.array().required(),
+    productType: yup.string().required(),
+    frameType: yup.string().required(),
   })
   .required();
+
+const cols: GridColDef[] = [
+  { field: "id", headerName: "ID", width: 90 },
+  { field: "frameColor", headerName: "Frame Color", width: 150 },
+  { field: "inStock", headerName: "In Stock", width: 150 },
+  { field: "price", headerName: "Price", width: 110 },
+  { field: "size", headerName: "Size", width: 110 },
+];
 
 export const AddItemForm = () => {
   const variantVals = useSelector(
     (state: RootState) => state?.form?.addVariantForm
   );
+
+  const tablerows = variantVals?.map((item, index) => {
+    return {
+      id: index,
+      frameColor: item.frameColor,
+      inStock: item.inStock,
+      price: item.price,
+      size: item.size,
+    };
+  });
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -45,10 +67,12 @@ export const AddItemForm = () => {
     resolver: yupResolver(schema),
     defaultValues: {
       name: "",
-      style: "",
+      frameStyle: "",
       description: "",
       lens: "",
       gender: "",
+      productType: "",
+      frameType: "",
       material: "",
       images: [],
     },
@@ -64,30 +88,29 @@ export const AddItemForm = () => {
   const [addProduct] = useAddProductMutation();
 
   const onSubmit = (data: FormValues) => {
-    const imageObj: Record<string, File> = {};
+    const formData = new FormData();
+
+    formData.append("name", data.name);
+    formData.append("frameStyle", data.frameStyle);
+    formData.append("description", data.description);
+    formData.append("lens", data.lens);
+    formData.append("gender", data.gender);
+    formData.append("material", data.material);
+    formData.append("productType", data.productType);
+    formData.append("frameType", data.frameType);
+    formData.append("variants", JSON.stringify(variantVals));
 
     data.images.forEach((file, index) => {
-      imageObj[`image${index}`] = file;
+      formData.append(`images${index}`, file);
     });
-    const reqBody = {
-      name: data.name,
-      style: data.style,
-      description: data.description,
-      lens: data.lens,
-      gender: data.gender,
-      material: data.material,
-      variants: variantVals,
-      ...imageObj,
-    };
 
-    console.log("Request Body:", reqBody);
-    addProduct(reqBody)
-      .then((response) => {
-        console.log("Item added:", response);
-      })
-      .catch((error) => {
-        console.error("Error adding item:", error);
-      });
+    for (const [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
+
+    addProduct(formData)
+      .then((res) => console.log("Item added:", res))
+      .catch((err) => console.error("Error adding item:", err));
   };
 
   const openDialog = () => {
@@ -104,21 +127,20 @@ export const AddItemForm = () => {
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-3 gap-4">
-            <div>
+            <>
               <TextInput
                 label={"name"}
-                defaultValue="name"
                 {...register("name")}
                 error={!!errors.name}
                 helperText={errors.name?.message}
               />
-            </div>
+            </>
 
             <div>
               <DropdownInput
-                label={"style"}
-                {...register("style")}
-                error={!!errors.style}
+                label={"frameStyle"}
+                name="frameStyle"
+                error={!!errors.frameStyle}
                 items={[
                   { value: "Round", label: "Round" },
                   { value: "Square", label: "Square" },
@@ -129,14 +151,41 @@ export const AddItemForm = () => {
                   { value: "aviator", label: "aviator" },
                   { value: "waifer", label: "waifer" },
                 ]}
-                helperText={errors.style?.message}
+                helperText={errors.frameStyle?.message}
+              />
+            </div>
+
+            <div>
+              <DropdownInput
+                label={"productType"}
+                name="productType"
+                error={!!errors.productType}
+                items={[
+                  { value: "Eyeglasses", label: "Eyeglasses" },
+                  { value: "Sunglasses", label: "Sunglasses" },
+                ]}
+                helperText={errors.productType?.message}
+              />
+            </div>
+
+            <div>
+              <DropdownInput
+                label={"frameType"}
+                name="frameType"
+                error={!!errors.frameType}
+                items={[
+                  { value: "Full Rim", label: "Full Rim" },
+                  { value: "Half Rim", label: "Half Rim" },
+                  { value: "Rimless", label: "Rimless" },
+                ]}
+                helperText={errors.frameType?.message}
               />
             </div>
 
             <div>
               <DropdownInput
                 label={"lens"}
-                {...register("lens")}
+                name="lens"
                 error={!!errors.lens}
                 items={[
                   { value: "Polarised", label: "Round" },
@@ -153,7 +202,7 @@ export const AddItemForm = () => {
             <div>
               <DropdownInput
                 label={"material"}
-                {...register("material")}
+                name="material"
                 error={!!errors.material}
                 items={[
                   { value: "Metal", label: "Metal" },
@@ -169,7 +218,7 @@ export const AddItemForm = () => {
             <div>
               <DropdownInput
                 label={"gender"}
-                {...register("gender")}
+                name="gender"
                 error={!!errors.gender}
                 items={[
                   { value: "Man", label: "Man" },
@@ -180,17 +229,16 @@ export const AddItemForm = () => {
               />
             </div>
 
-            <div>
+            <>
               <TextInput
                 label={"description"}
-                defaultValue="description"
-                {...register("description")}
+                name="description"
                 error={!!errors.description}
                 helperText={errors.description?.message}
                 multiline
                 rows={4}
               />
-            </div>
+            </>
 
             <div>
               <FileUploadInput />
@@ -230,6 +278,15 @@ export const AddItemForm = () => {
         ) : (
           <></>
         )}
+      </div>
+
+      <div>
+        <GenericDataGrid
+          rows={tablerows ? tablerows : []}
+          columns={cols}
+          pageSize={5}
+          checkboxSelection={true}
+        />
       </div>
     </>
   );

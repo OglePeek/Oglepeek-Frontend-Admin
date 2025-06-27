@@ -14,7 +14,7 @@ const FileUploadInput = () => {
   };
 
   return (
-    <Box sx={{ mt: 2 }}>
+    <Box>
       {/* Hidden file input */}
       <input
         accept="image/*"
