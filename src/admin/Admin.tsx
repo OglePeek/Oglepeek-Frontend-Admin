@@ -7,6 +7,7 @@ import { AppProvider, type Navigation } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { DemoProvider, useDemoRouter } from "@toolpad/core/internal";
 import { AddItemForm } from "./AddItemForm";
+import { ProductGrid } from "./ProductGrid";
 
 const NAVIGATION: Navigation = [
   {
@@ -45,6 +46,17 @@ function DemoPageContent({ pathname }: { pathname: string }) {
           Add Product
         </Typography>
         <AddItemForm />
+      </Box>
+    );
+  }
+
+  if (pathname === "/dashboard") {
+    return (
+      <Box sx={{ py: 4, px: 6 }}>
+        <Typography variant="h5" mb={2}>
+          All Products
+        </Typography>
+        <ProductGrid />
       </Box>
     );
   }

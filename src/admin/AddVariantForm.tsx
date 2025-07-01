@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { Button } from "@mui/material";
 import { saveFormData } from "../redux/formslice";
 import type { AppDispatch } from "../redux/store";
+import { CheckboxInput } from "./CheckboxInput";
 
 // type Props = {
 
@@ -18,6 +19,7 @@ const schema = yup
     inStock: yup.number().positive().integer().required(),
     price: yup.number().positive().integer().required(),
     size: yup.string().required(),
+    hidden: yup.boolean().default(false),
   })
   .required();
 
@@ -33,6 +35,7 @@ export const AddVariantForm = () => {
       inStock: 0,
       price: 0,
       size: "",
+      hidden: false,
     },
   });
 
@@ -95,6 +98,10 @@ export const AddVariantForm = () => {
                 ]}
                 helperText={errors.size?.message}
               />
+            </div>
+
+            <div>
+              <CheckboxInput name="hidden" label="Hidden" />
             </div>
           </div>
           <div>

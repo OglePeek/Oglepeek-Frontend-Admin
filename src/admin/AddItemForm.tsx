@@ -40,6 +40,7 @@ const cols: GridColDef[] = [
   { field: "inStock", headerName: "In Stock", width: 150 },
   { field: "price", headerName: "Price", width: 110 },
   { field: "size", headerName: "Size", width: 110 },
+  { field: "hidden", headerName: "Hidden", width: 110 },
 ];
 
 export const AddItemForm = () => {
@@ -54,6 +55,7 @@ export const AddItemForm = () => {
       inStock: item.inStock,
       price: item.price,
       size: item.size,
+      hidden: item.hidden,
     };
   });
 

@@ -7,6 +7,7 @@ interface Variant {
   inStock: number;
   price: number;
   size: string;
+  hidden: boolean; 
 }
 
 interface FormState {

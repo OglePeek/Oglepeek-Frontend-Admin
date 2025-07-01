@@ -6,15 +6,28 @@ type Item = {
   id: number;
   name: string;
   price: number;
+  lens: string;
+  gender: string;
+  material: string;
+  productType: string;
+  frameStyle: string;
+  variants: Array<{
+    _id: string;
+    frameColor: string;
+    inStock: number;
+    price: number;
+    size: string;
+    images: string[];
+  }>;
 };
 
 export const api = createApi({
   reducerPath: "api", // unique key in the store
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8000/api" }), // base URL
+  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8000/api/" }), // base URL
   endpoints: (builder) => ({
     // Example GET endpoint
-    getItems: builder.query<Item[], void>({
-      query: () => "items",
+    getAllProducts: builder.query<Item[], void>({
+      query: () => "product",
     }),
 
     // Add a new product (POST endpoint)
@@ -31,4 +44,4 @@ export const api = createApi({
   }),
 });
 
-export const { useGetItemsQuery, useAddProductMutation } = api;
+export const { useGetAllProductsQuery, useAddProductMutation } = api;
