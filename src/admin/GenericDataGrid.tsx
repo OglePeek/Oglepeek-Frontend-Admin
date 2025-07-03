@@ -7,6 +7,7 @@ type GenericDataGridProps<T extends { id: number | string }> = {
   columns: GridColDef<T>[];
   pageSize?: number;
   checkboxSelection?: boolean;
+  doubleClickFn?: (row: T) => void;
 };
 
 export function GenericDataGrid<T extends { id: number | string }>({
@@ -14,6 +15,7 @@ export function GenericDataGrid<T extends { id: number | string }>({
   columns,
   pageSize = 5,
   checkboxSelection = true,
+  doubleClickFn,
 }: GenericDataGridProps<T>) {
   return (
     <Box sx={{ height: "100%", width: "100%" }}>
@@ -30,6 +32,9 @@ export function GenericDataGrid<T extends { id: number | string }>({
         pageSizeOptions={[pageSize]}
         checkboxSelection={checkboxSelection}
         disableRowSelectionOnClick
+        onCellDoubleClick={(params) => {
+          if (doubleClickFn) doubleClickFn(params.row); // <- Pass entire row
+        }}
       />
     </Box>
   );

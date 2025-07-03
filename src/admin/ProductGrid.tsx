@@ -2,6 +2,41 @@ import { CircularProgress } from "@mui/material";
 import { GenericDataGrid } from "./GenericDataGrid";
 import { useGetAllProductsQuery } from "../services/api";
 import type { GridColDef } from "@mui/x-data-grid";
+import { useState } from "react";
+import { DialogBox } from "./DialogBox";
+import { UpdateItemForm } from "./UpdateItemForm";
+
+type ProductRow = {
+  image: string;
+  productName: string;
+  frameStyle: string;
+  lens: string;
+  gender: string;
+  material: string;
+  productType: string;
+  frameColor: string;
+  inStock: number;
+  price: number;
+  size: string;
+  id: string;
+};
+
+type EditableProduct = {
+  productName: string;
+  frameStyle: string;
+  description: string;
+  lens: string;
+  gender: string;
+  material: string;
+  productType: string;
+  frameColor: string;
+  frameType: string;
+  instock: number;
+  price: number;
+  size: string;
+  id: string;
+  image: string;
+};
 
 const columns: GridColDef[] = [
   {
@@ -13,7 +48,13 @@ const columns: GridColDef[] = [
       <img
         src={params.value}
         alt="variant"
-        style={{ width: 60, height: 40, objectFit: "cover", borderRadius: 4 }}
+        style={{
+          width: 60,
+          height: 40,
+          objectFit: "cover",
+          borderRadius: 4,
+          marginTop: 5,
+        }}
       />
     ),
   },
@@ -31,9 +72,19 @@ const columns: GridColDef[] = [
 ];
 
 export const ProductGrid = () => {
+  const [openEditForm, setOpenEditForm] = useState(false);
+  const [selectedProduct, setSelectedProduct] =
+    useState<EditableProduct | null>(null);
+
   const { data: allProducts, isLoading } = useGetAllProductsQuery();
 
-  console.log("All Products:", allProducts);
+  console.log(selectedProduct);
+
+  // const editProduct = (SelectedProductData: EditableProduct) => {
+  //   setOpenEditForm(true);
+  //   setSelectedProduct(SelectedProductData);
+  // };
+
   const productData = allProducts?.flatMap((product) =>
     product.variants.map((variant) => ({
       image: variant.images?.[0] ?? "",
@@ -56,13 +107,42 @@ export const ProductGrid = () => {
       {isLoading ? (
         <CircularProgress />
       ) : (
-        <GenericDataGrid
-          rows={productData ? productData : []}
+        <GenericDataGrid<ProductRow>
+          rows={productData ?? []}
           columns={columns}
           pageSize={5}
           checkboxSelection={true}
+          doubleClickFn={(row) => {
+            const editable: EditableProduct = {
+              productName: row.productName,
+              frameStyle: row.frameStyle,
+              description: "", // fallback or load from product if needed
+              lens: row.lens,
+              gender: row.gender,
+              material: row.material,
+              productType: row.productType,
+              frameColor: row.frameColor,
+              frameType: "", // fallback or load from product if needed
+              instock: row.inStock,
+              price: row.price,
+              size: row.size,
+              id: row.id,
+              image: row.image,
+            };
+            setSelectedProduct(editable);
+            setOpenEditForm(true);
+          }}
         />
       )}
+
+      {openEditForm && selectedProduct ? (
+        <DialogBox
+          title="Add Variant"
+          fieldform={<UpdateItemForm productData={selectedProduct} />}
+          openform={openEditForm}
+          closeform={setOpenEditForm}
+        />
+      ) : null}
     </div>
   );
 };
