@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 // Define the type for an item
 type Item = {
-  id: number;
+  _id: string;
   name: string;
   price: number;
   lens: string;

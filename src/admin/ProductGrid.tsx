@@ -7,6 +7,7 @@ import { DialogBox } from "./DialogBox";
 import { UpdateItemForm } from "./UpdateItemForm";
 
 type ProductRow = {
+  id: string;
   image: string;
   productName: string;
   frameStyle: string;
@@ -18,24 +19,34 @@ type ProductRow = {
   inStock: number;
   price: number;
   size: string;
-  id: string;
+  variantId: string;
+  productId: string;
+};
+
+export type Variant = {
+  variantId?: string; // Optional if not used
+  inStock: number;
+  frameColor: string;
+  price: number;
+  size: number;
+  hidden: boolean;
+  images: File[]; // or string[] if URLs
 };
 
 type EditableProduct = {
-  productName: string;
-  frameStyle: string;
-  description: string;
-  lens: string;
-  gender: string;
-  material: string;
-  productType: string;
-  frameColor: string;
-  frameType: string;
-  instock: number;
-  price: number;
-  size: string;
-  id: string;
-  image: string;
+  productData: {
+    productId: string;
+    name: string;
+    frameStyle: string;
+    description: string;
+    lens: string;
+    gender: string;
+    material: string;
+    productType: string;
+    frameType: string;
+    image: string;
+  };
+  variants: Variant[];
 };
 
 const columns: GridColDef[] = [
@@ -68,15 +79,20 @@ const columns: GridColDef[] = [
   { field: "inStock", headerName: "Stock", width: 100 },
   { field: "price", headerName: "Price", width: 100 },
   { field: "size", headerName: "Size", width: 100 },
-  { field: "id", headerName: "ID", width: 100 },
+  { field: "productId", headerName: "ID", width: 250 },
 ];
 
 export const ProductGrid = () => {
   const [openEditForm, setOpenEditForm] = useState(false);
-  const [selectedProduct, setSelectedProduct] =
-    useState<EditableProduct | null>(null);
+
+  const [selectedProduct, setSelectedProduct] = useState<{
+    productData: EditableProduct["productData"];
+    variants: EditableProduct["variants"];
+  } | null>(null);
 
   const { data: allProducts, isLoading } = useGetAllProductsQuery();
+
+  console.log(allProducts);
 
   console.log(selectedProduct);
 
@@ -87,6 +103,7 @@ export const ProductGrid = () => {
 
   const productData = allProducts?.flatMap((product) =>
     product.variants.map((variant) => ({
+      id: product._id,
       image: variant.images?.[0] ?? "",
       productName: product.name,
       frameStyle: product.frameStyle,
@@ -98,7 +115,8 @@ export const ProductGrid = () => {
       inStock: variant.inStock,
       price: variant.price,
       size: variant.size,
-      id: variant._id,
+      variantId: variant._id,
+      productId: product._id,
     }))
   );
 
@@ -111,25 +129,35 @@ export const ProductGrid = () => {
           rows={productData ?? []}
           columns={columns}
           pageSize={5}
+          getRowId={(row) => row.variantId} // Ensure the id field is used for row identification
           checkboxSelection={true}
           doubleClickFn={(row) => {
-            const editable: EditableProduct = {
-              productName: row.productName,
+            const editableProduct = {
+              productId: row.productId,
+              name: row.productName,
               frameStyle: row.frameStyle,
-              description: "", // fallback or load from product if needed
+              description: "", // load if available
               lens: row.lens,
               gender: row.gender,
               material: row.material,
               productType: row.productType,
-              frameColor: row.frameColor,
-              frameType: "", // fallback or load from product if needed
-              instock: row.inStock,
-              price: row.price,
-              size: row.size,
-              id: row.id,
+              frameType: "", // load if available
               image: row.image,
             };
-            setSelectedProduct(editable);
+
+            const variants = [
+              {
+                variantId: row.variantId,
+                inStock: row.inStock,
+                frameColor: row.frameColor,
+                price: row.price,
+                size: Number(row.size),
+                hidden: false,
+                images: [], // load if needed
+              },
+            ];
+
+            setSelectedProduct({ productData: editableProduct, variants });
             setOpenEditForm(true);
           }}
         />
@@ -138,7 +166,12 @@ export const ProductGrid = () => {
       {openEditForm && selectedProduct ? (
         <DialogBox
           title="Add Variant"
-          fieldform={<UpdateItemForm productData={selectedProduct} />}
+          fieldform={
+            <UpdateItemForm
+              productData={selectedProduct.productData}
+              variants={selectedProduct.variants}
+            />
+          }
           openform={openEditForm}
           closeform={setOpenEditForm}
         />

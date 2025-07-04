@@ -248,11 +248,11 @@ export const AddItemForm = () => {
           </div>
 
           <div className="grid grid-cols-3 justify-items-start">
-            <div className=" py-4">
+            {/* <div className=" py-4">
               <Button variant="contained" type="button" onClick={openDialog}>
                 Add Variant
               </Button>
-            </div>
+            </div> */}
             <div className=" py-4">
               <Button variant="contained" type="submit">
                 Add Item
@@ -267,7 +267,7 @@ export const AddItemForm = () => {
         </form>
       </FormProvider>
 
-      <div>
+      {/* <div>
         {openVariantForm ? (
           <>
             <DialogBox
@@ -289,7 +289,7 @@ export const AddItemForm = () => {
           pageSize={5}
           checkboxSelection={true}
         />
-      </div>
+      </div> */}
     </>
   );
 };

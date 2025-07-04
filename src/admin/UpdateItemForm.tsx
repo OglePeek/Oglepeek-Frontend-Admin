@@ -16,27 +16,46 @@ import { useAddProductMutation } from "../services/api";
 import { GenericDataGrid } from "./GenericDataGrid";
 import type { GridColDef } from "@mui/x-data-grid";
 
+type VariantRow = {
+  id: string | number; // Unique identifier for the row
+  variantId: string; // Optional if not used
+  inStock: number;
+  frameColor: string;
+  price: number;
+  size: number;
+  hidden: boolean;
+  images: File[]; // Assuming images are stored as URLs
+};
+
+type Variant = {
+  variantId?: string; // Optional if not used
+  inStock: number;
+  frameColor: string;
+  price: number;
+  size: number;
+  hidden: boolean;
+  images: File[]; // or string[] if URLs
+};
+
 type Props = {
   productData: {
-    productName: string;
+    productId: string;
+    name: string;
     frameStyle: string;
     description: string;
     lens: string;
     gender: string;
     material: string;
     productType: string;
-    frameColor: string;
     frameType: string;
-    instock: number;
-    price: number;
-    size: string;
-    id: string;
     image: string;
   };
+  variants: Variant[];
 };
 
 const schema = yup
   .object({
+    id: yup.string().required(),
     name: yup.string().required(),
     frameStyle: yup.string().required(),
     description: yup.string().required(),
@@ -50,7 +69,7 @@ const schema = yup
   .required();
 
 const cols: GridColDef[] = [
-  { field: "id", headerName: "ID", width: 90 },
+  { field: "variantId", headerName: "ID", width: 90 },
   { field: "frameColor", headerName: "Frame Color", width: 150 },
   { field: "inStock", headerName: "In Stock", width: 150 },
   { field: "price", headerName: "Price", width: 110 },
@@ -58,14 +77,15 @@ const cols: GridColDef[] = [
   { field: "hidden", headerName: "Hidden", width: 110 },
 ];
 
-export const UpdateItemForm = ({ productData }: Props) => {
-  const variantVals = useSelector(
-    (state: RootState) => state?.form?.addVariantForm
-  );
-
-  const tablerows = variantVals?.map((item, index) => {
+export const UpdateItemForm = ({ productData, variants }: Props) => {
+  //   const variantVals = useSelector(
+  //     (state: RootState) => state?.form?.addVariantForm
+  //   );
+  const tablerows = variants?.map((item, index) => {
     return {
-      id: index,
+      id: item?.variantId || index,
+      variantId: item?.variantId ?? "",
+      images: item.images,
       frameColor: item.frameColor,
       inStock: item.inStock,
       price: item.price,
@@ -83,7 +103,8 @@ export const UpdateItemForm = ({ productData }: Props) => {
   const methods = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues: {
-      name: productData?.productName || "",
+      id: productData?.productId || "",
+      name: productData?.name || "",
       frameStyle: productData?.frameStyle || "",
       description: productData?.description || "",
       lens: productData?.lens || "",
@@ -106,7 +127,6 @@ export const UpdateItemForm = ({ productData }: Props) => {
 
   const onSubmit = () => {
     // const formData = new FormData();
-
     // formData.append("name", data.name);
     // formData.append("frameStyle", data.frameStyle);
     // formData.append("description", data.description);
@@ -116,15 +136,12 @@ export const UpdateItemForm = ({ productData }: Props) => {
     // formData.append("productType", data.productType);
     // formData.append("frameType", data.frameType);
     // formData.append("variants", JSON.stringify(variantVals));
-
     // data.images.forEach((file, index) => {
     //   formData.append(`images${index}`, file);
     // });
-
     // for (const [key, value] of formData.entries()) {
     //   console.log(key, value);
     // }
-
     // addProduct(formData)
     //   .then((res) => console.log("Item added:", res))
     //   .catch((err) => console.error("Error adding item:", err));
@@ -143,7 +160,15 @@ export const UpdateItemForm = ({ productData }: Props) => {
     <>
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-4 p-4">
+            <>
+              <TextInput
+                label={"id"}
+                {...register("id")}
+                error={!!errors.id}
+                helperText={errors.id?.message}
+              />
+            </>
             <>
               <TextInput
                 label={"name"}
@@ -298,11 +323,12 @@ export const UpdateItemForm = ({ productData }: Props) => {
       </div>
 
       <div>
-        <GenericDataGrid
+        <GenericDataGrid<VariantRow>
           rows={tablerows ? tablerows : []}
           columns={cols}
           pageSize={5}
           checkboxSelection={true}
+          getRowId={(row) => row.variantId}
         />
       </div>
     </>

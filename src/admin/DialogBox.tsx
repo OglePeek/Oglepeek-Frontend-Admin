@@ -16,7 +16,7 @@ export const DialogBox = ({ title, fieldform, openform, closeform }: Props) => {
 
   return (
     <React.Fragment>
-      <Dialog open={openform} onClose={handleClose}>
+      <Dialog open={openform} onClose={handleClose} fullWidth maxWidth="lg">
         <DialogTitle sx={{ m: 0, p: 2 }}>
           {title}
           <IconButton
