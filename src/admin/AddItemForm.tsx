@@ -4,9 +4,6 @@ import * as yup from "yup";
 import { TextInput } from "./TextInput";
 import { Button } from "@mui/material";
 import { DropdownInput } from "./DropdownInput";
-import type { AppDispatch } from "../redux/store";
-import { resetFormData } from "../redux/formslice";
-import { useDispatch } from "react-redux";
 import { useAddProductMutation } from "../services/api";
 
 // type Props = {
@@ -27,7 +24,6 @@ const schema = yup
   .required();
 
 export const AddItemForm = () => {
-  const dispatch = useDispatch<AppDispatch>();
 
   type FormValues = yup.InferType<typeof schema>;
 
@@ -55,21 +51,21 @@ export const AddItemForm = () => {
 
   const [addProduct] = useAddProductMutation();
 
-  const onSubmit = (data: FormValues) => {
+  const createNewProduct = (data: FormValues) => {
     addProduct(data)
+      .unwrap()
       .then((res) => console.log("Item added:", res))
       .catch((err) => console.error("Error adding item:", err));
   };
 
   const clearForm = () => {
     reset();
-    dispatch(resetFormData());
   };
 
   return (
     <>
       <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(createNewProduct)}>
           <div className="grid grid-cols-3 gap-4">
             <>
               <TextInput
@@ -176,7 +172,7 @@ export const AddItemForm = () => {
             <>
               <TextInput
                 label={"description"}
-                name="description"
+                {...register("description")}
                 error={!!errors.description}
                 helperText={errors.description?.message}
                 multiline

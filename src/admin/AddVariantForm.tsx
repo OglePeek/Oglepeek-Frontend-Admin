@@ -48,11 +48,15 @@ export const AddVariantForm = ({ productId }: Props) => {
 
   const createProductVariant = (data: FormValues) => {
     createVariant({ body: data, productId: productId })
+      .unwrap()
       .then((res) => {
-        console.log("Item added:", res);
-        alert(res);
+        console.log(res);
+        alert(res?.data?.message);
       })
-      .catch((err) => console.error("Error adding item:", err));
+      .catch((err) => {
+        console.error(err);
+        alert(err?.data?.message);
+      });
   };
 
   return (

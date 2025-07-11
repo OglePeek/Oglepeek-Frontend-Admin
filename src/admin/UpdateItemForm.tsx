@@ -68,8 +68,24 @@ const schema = yup
   .required();
 
 const cols: GridColDef[] = [
-  { field: "id", headerName: "ID", width: 90 },
-  { field: "variantId", headerName: "Variant ID", width: 90 },
+  {
+    field: "image",
+    headerName: "Image",
+    width: 100,
+    renderCell: (params) => (
+      <img
+        src={params.row.images?.[0] || ""}
+        alt="product"
+        style={{
+          width: 60,
+          height: 40,
+          objectFit: "cover",
+          borderRadius: 4,
+        }}
+      />
+    ),
+  },
+  { field: "variantId", headerName: "Variant ID", width: 300 },
   { field: "frameColor", headerName: "Frame Color", width: 150 },
   { field: "inStock", headerName: "In Stock", width: 150 },
   { field: "price", headerName: "Price", width: 110 },

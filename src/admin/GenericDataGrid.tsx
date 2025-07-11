@@ -33,6 +33,7 @@ export function GenericDataGrid<T extends { id: number | string }>({
           },
         }}
         pageSizeOptions={[pageSize]}
+        // rowHeight={150} // ✅ Set all rows to 80px
         checkboxSelection={checkboxSelection}
         disableRowSelectionOnClick
         onCellDoubleClick={(params) => {
