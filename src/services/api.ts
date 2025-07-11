@@ -3,18 +3,35 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 // Define the type for an item
 type Item = {
-  id: number;
+  _id: string;
   name: string;
   price: number;
+  lens: string;
+  gender: string;
+  material: string;
+  productType: string;
+  frameStyle: string;
+  variants: Array<{
+    _id: string;
+    frameColor: string;
+    inStock: number;
+    price: number;
+    size: string;
+    hidden: boolean;
+    images: string[];
+  }>;
 };
 
 export const api = createApi({
   reducerPath: "api", // unique key in the store
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8000/api" }), // base URL
+  baseQuery: fetchBaseQuery({
+    baseUrl: "http://localhost:8000/api/",
+    credentials: "include",
+  }), // base URL
   endpoints: (builder) => ({
     // Example GET endpoint
-    getItems: builder.query<Item[], void>({
-      query: () => "items",
+    getAllProducts: builder.query<Item[], void>({
+      query: () => "product",
     }),
 
     // Add a new product (POST endpoint)
@@ -23,12 +40,28 @@ export const api = createApi({
         url: "product",
         method: "POST",
         body,
-        headers: {
-          Authorization: `Bearer ${"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjg1NmVhMTFmMDhjZTI1NmM2NzAwNGM3In0sImlhdCI6MTc1MDYxNTQxNiwiZXhwIjoxNzUwNjE5MDE2fQ.07ByVC_zv2ZBPvGxJOU3RA7-AMQ3iJzRLEiG2uct5fM"}`, // Replace with your actual token
-        },
+        // headers: {
+        //   Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjg2NzcxOGI5MGE0ZGRlODRlMGZiOTA3In0sImlhdCI6MTc1MjI1OTMyNCwiZXhwIjoxNzgzNzk1MzI0fQ.bkpYgUXl0_b9G3UM4vDtQNeW-o3P5i7lkdfBoCXwhD0`,
+        // },
+      }),
+    }),
+
+    // Mutation to create a variant
+    createVariant: builder.mutation({
+      query: ({ body, productId }) => ({
+        url: `variant/${productId}`,
+        method: "POST",
+        body,
+        // headers: {
+        //   Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjg2NzcxOGI5MGE0ZGRlODRlMGZiOTA3In0sImlhdCI6MTc1MjI1OTMyNCwiZXhwIjoxNzgzNzk1MzI0fQ.bkpYgUXl0_b9G3UM4vDtQNeW-o3P5i7lkdfBoCXwhD0`,
+        // },
       }),
     }),
   }),
 });
 
-export const { useGetItemsQuery, useAddProductMutation } = api;
+export const {
+  useGetAllProductsQuery,
+  useAddProductMutation,
+  useCreateVariantMutation,
+} = api;

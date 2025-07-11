@@ -3,10 +3,14 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 interface Variant {
-  frameColor: string;
+  id?: string; // Optional if not used
+  variantId?: string; // Optional if not used
   inStock: number;
+  frameColor: string;
   price: number;
-  size: string;
+  size: number | string; // Assuming size can be a number or string
+  hidden: boolean;
+  images: File[] | string[]; // or string[] if URLs
 }
 
 interface FormState {
@@ -21,9 +25,20 @@ export const formSlice = createSlice({
   name: "form",
   initialState,
   reducers: {
-    saveFormData: (state, action: PayloadAction<Variant>) => {
-      state.addVariantForm = [...state.addVariantForm, action.payload];
-      console.log("Saved:", action.payload);
+    saveFormData: (state, action: PayloadAction<Variant | Variant[]>) => {
+      const newVariants = Array.isArray(action.payload)
+        ? action.payload
+        : [action.payload];
+
+      newVariants.forEach((variant) => {
+        const exists = state.addVariantForm.find(
+          (v) => v?.variantId === variant?.variantId
+        );
+
+        if (!exists) {
+          state.addVariantForm.push(variant);
+        }
+      });
     },
     resetFormData: () => initialState,
   },

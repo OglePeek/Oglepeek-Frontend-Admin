@@ -7,6 +7,8 @@ type GenericDataGridProps<T extends { id: number | string }> = {
   columns: GridColDef<T>[];
   pageSize?: number;
   checkboxSelection?: boolean;
+  doubleClickFn?: (row: T) => void;
+  getRowId: (row: T) => string | number;
 };
 
 export function GenericDataGrid<T extends { id: number | string }>({
@@ -14,12 +16,15 @@ export function GenericDataGrid<T extends { id: number | string }>({
   columns,
   pageSize = 5,
   checkboxSelection = true,
+  doubleClickFn,
+  getRowId
 }: GenericDataGridProps<T>) {
   return (
     <Box sx={{ height: "100%", width: "100%" }}>
       <DataGrid
         rows={rows}
         columns={columns}
+        getRowId={getRowId} // Ensure the id field is used for row identification
         initialState={{
           pagination: {
             paginationModel: {
@@ -28,8 +33,12 @@ export function GenericDataGrid<T extends { id: number | string }>({
           },
         }}
         pageSizeOptions={[pageSize]}
+        // rowHeight={150} // ✅ Set all rows to 80px
         checkboxSelection={checkboxSelection}
         disableRowSelectionOnClick
+        onCellDoubleClick={(params) => {
+          if (doubleClickFn) doubleClickFn(params.row); // <- Pass entire row
+        }}
       />
     </Box>
   );
