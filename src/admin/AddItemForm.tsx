@@ -4,17 +4,10 @@ import * as yup from "yup";
 import { TextInput } from "./TextInput";
 import { Button } from "@mui/material";
 import { DropdownInput } from "./DropdownInput";
-import { useState } from "react";
-import { DialogBox } from "./DialogBox";
-import { AddVariantForm } from "./AddVariantForm";
 import type { AppDispatch } from "../redux/store";
 import { resetFormData } from "../redux/formslice";
-import { useDispatch, useSelector } from "react-redux";
-import FileUploadInput from "./FileUploadInput";
-import type { RootState } from "../redux/store";
+import { useDispatch } from "react-redux";
 import { useAddProductMutation } from "../services/api";
-import { GenericDataGrid } from "./GenericDataGrid";
-import type { GridColDef } from "@mui/x-data-grid";
 
 // type Props = {
 
@@ -28,40 +21,13 @@ const schema = yup
     lens: yup.string().required(),
     gender: yup.string().required(),
     material: yup.string().required(),
-    images: yup.array().required(),
     productType: yup.string().required(),
     frameType: yup.string().required(),
   })
   .required();
 
-const cols: GridColDef[] = [
-  { field: "id", headerName: "ID", width: 90 },
-  { field: "frameColor", headerName: "Frame Color", width: 150 },
-  { field: "inStock", headerName: "In Stock", width: 150 },
-  { field: "price", headerName: "Price", width: 110 },
-  { field: "size", headerName: "Size", width: 110 },
-  { field: "hidden", headerName: "Hidden", width: 110 },
-];
-
 export const AddItemForm = () => {
-  const variantVals = useSelector(
-    (state: RootState) => state?.form?.addVariantForm
-  );
-
-  const tablerows = variantVals?.map((item, index) => {
-    return {
-      id: index,
-      frameColor: item.frameColor,
-      inStock: item.inStock,
-      price: item.price,
-      size: item.size,
-      hidden: item.hidden,
-    };
-  });
-
   const dispatch = useDispatch<AppDispatch>();
-
-  const [openVariantForm, setOpenVariantForm] = useState(false);
 
   type FormValues = yup.InferType<typeof schema>;
 
@@ -76,7 +42,7 @@ export const AddItemForm = () => {
       productType: "",
       frameType: "",
       material: "",
-      images: [],
+      // images: [],
     },
   });
 
@@ -90,33 +56,9 @@ export const AddItemForm = () => {
   const [addProduct] = useAddProductMutation();
 
   const onSubmit = (data: FormValues) => {
-    const formData = new FormData();
-
-    formData.append("name", data.name);
-    formData.append("frameStyle", data.frameStyle);
-    formData.append("description", data.description);
-    formData.append("lens", data.lens);
-    formData.append("gender", data.gender);
-    formData.append("material", data.material);
-    formData.append("productType", data.productType);
-    formData.append("frameType", data.frameType);
-    formData.append("variants", JSON.stringify(variantVals));
-
-    data.images.forEach((file, index) => {
-      formData.append(`images${index}`, file);
-    });
-
-    for (const [key, value] of formData.entries()) {
-      console.log(key, value);
-    }
-
-    addProduct(formData)
+    addProduct(data)
       .then((res) => console.log("Item added:", res))
       .catch((err) => console.error("Error adding item:", err));
-  };
-
-  const openDialog = () => {
-    setOpenVariantForm(true);
   };
 
   const clearForm = () => {
@@ -242,17 +184,12 @@ export const AddItemForm = () => {
               />
             </>
 
-            <div>
+            {/* <div>
               <FileUploadInput />
-            </div>
+            </div> */}
           </div>
 
           <div className="grid grid-cols-3 justify-items-start">
-            {/* <div className=" py-4">
-              <Button variant="contained" type="button" onClick={openDialog}>
-                Add Variant
-              </Button>
-            </div> */}
             <div className=" py-4">
               <Button variant="contained" type="submit">
                 Add Item
@@ -266,30 +203,6 @@ export const AddItemForm = () => {
           </div>
         </form>
       </FormProvider>
-
-      {/* <div>
-        {openVariantForm ? (
-          <>
-            <DialogBox
-              title="Add Variant"
-              fieldform={<AddVariantForm />}
-              openform={openVariantForm}
-              closeform={setOpenVariantForm}
-            ></DialogBox>
-          </>
-        ) : (
-          <></>
-        )}
-      </div>
-
-      <div>
-        <GenericDataGrid
-          rows={tablerows ? tablerows : []}
-          columns={cols}
-          pageSize={5}
-          checkboxSelection={true}
-        />
-      </div> */}
     </>
   );
 };

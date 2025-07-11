@@ -3,15 +3,14 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { DropdownInput } from "./DropdownInput";
 import { TextInput } from "./TextInput";
-import { useDispatch } from "react-redux";
 import { Button } from "@mui/material";
-import { saveFormData } from "../redux/formslice";
-import type { AppDispatch } from "../redux/store";
 import { CheckboxInput } from "./CheckboxInput";
+import FileUploadInput from "./FileUploadInput";
+import { useCreateVariantMutation } from "../services/api";
 
-// type Props = {
-
-// }
+type Props = {
+  productId: string;
+};
 
 const schema = yup
   .object({
@@ -20,12 +19,11 @@ const schema = yup
     price: yup.number().positive().integer().required(),
     size: yup.string().required(),
     hidden: yup.boolean().default(false),
+    images: yup.array().required(),
   })
   .required();
 
-export const AddVariantForm = () => {
-  const dispatch = useDispatch<AppDispatch>();
-
+export const AddVariantForm = ({ productId }: Props) => {
   type FormValues = yup.InferType<typeof schema>;
 
   const methods = useForm<FormValues>({
@@ -36,6 +34,7 @@ export const AddVariantForm = () => {
       price: 0,
       size: "",
       hidden: false,
+      images: [],
     },
   });
 
@@ -45,15 +44,21 @@ export const AddVariantForm = () => {
     formState: { errors },
   } = methods;
 
-  const saveToRedux = (data: FormValues) => {
-    // console.log(data);
-    dispatch(saveFormData(data));
+  const [createVariant] = useCreateVariantMutation();
+
+  const createProductVariant = (data: FormValues) => {
+    createVariant({ body: data, productId: productId })
+      .then((res) => {
+        console.log("Item added:", res);
+        alert(res);
+      })
+      .catch((err) => console.error("Error adding item:", err));
   };
 
   return (
     <div>
       <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(saveToRedux)}>
+        <form onSubmit={handleSubmit(createProductVariant)}>
           <div className="grid grid-cols-3 gap-4 py-4">
             <div>
               <TextInput
@@ -102,6 +107,10 @@ export const AddVariantForm = () => {
 
             <div>
               <CheckboxInput name="hidden" label="Hidden" />
+            </div>
+
+            <div>
+              <FileUploadInput />
             </div>
           </div>
           <div>

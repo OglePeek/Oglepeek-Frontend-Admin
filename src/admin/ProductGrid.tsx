@@ -8,19 +8,14 @@ import { UpdateItemForm } from "./UpdateItemForm";
 
 type ProductRow = {
   id: string;
-  image: string;
   productName: string;
   frameStyle: string;
   lens: string;
   gender: string;
   material: string;
   productType: string;
-  frameColor: string;
-  inStock: number;
-  price: number;
-  size: string;
-  variantId: string;
   productId: string;
+  variant: Variant[];
 };
 
 export type Variant = {
@@ -28,9 +23,9 @@ export type Variant = {
   inStock: number;
   frameColor: string;
   price: number;
-  size: number;
+  size: string;
   hidden: boolean;
-  images: File[]; // or string[] if URLs
+  images: string[]; // or string[] if URLs
 };
 
 type EditableProduct = {
@@ -44,41 +39,17 @@ type EditableProduct = {
     material: string;
     productType: string;
     frameType: string;
-    image: string;
   };
   variants: Variant[];
 };
 
 const columns: GridColDef[] = [
-  {
-    field: "image",
-    headerName: "Image",
-    width: 120,
-    sortable: false,
-    renderCell: (params) => (
-      <img
-        src={params.value}
-        alt="variant"
-        style={{
-          width: 60,
-          height: 40,
-          objectFit: "cover",
-          borderRadius: 4,
-          marginTop: 5,
-        }}
-      />
-    ),
-  },
   { field: "productName", headerName: "Product Name", width: 180 },
   { field: "frameStyle", headerName: "Frame Style", width: 150 },
   { field: "lens", headerName: "Lens", width: 120 },
   { field: "gender", headerName: "Gender", width: 100 },
   { field: "material", headerName: "Material", width: 120 },
   { field: "productType", headerName: "Product Type", width: 150 },
-  { field: "frameColor", headerName: "Frame Color", width: 150 },
-  { field: "inStock", headerName: "Stock", width: 100 },
-  { field: "price", headerName: "Price", width: 100 },
-  { field: "size", headerName: "Size", width: 100 },
   { field: "productId", headerName: "ID", width: 250 },
 ];
 
@@ -94,31 +65,26 @@ export const ProductGrid = () => {
 
   console.log(allProducts);
 
-  console.log(selectedProduct);
-
-  // const editProduct = (SelectedProductData: EditableProduct) => {
-  //   setOpenEditForm(true);
-  //   setSelectedProduct(SelectedProductData);
-  // };
-
-  const productData = allProducts?.flatMap((product) =>
-    product.variants.map((variant) => ({
+  const productData =
+    allProducts?.map((product) => ({
       id: product._id,
-      image: variant.images?.[0] ?? "",
+      productId: product._id,
       productName: product.name,
       frameStyle: product.frameStyle,
       lens: product.lens,
       gender: product.gender,
       material: product.material,
       productType: product.productType,
-      frameColor: variant.frameColor,
-      inStock: variant.inStock,
-      price: variant.price,
-      size: variant.size,
-      variantId: variant._id,
-      productId: product._id,
-    }))
-  );
+      variant: product.variants.map((variant) => ({
+        variantId: variant._id,
+        frameColor: variant.frameColor,
+        inStock: variant.inStock,
+        price: variant.price,
+        size: variant.size,
+        hidden: variant.hidden ?? false,
+        images: variant.images ?? [],
+      })),
+    })) ?? [];
 
   return (
     <div>
@@ -129,7 +95,7 @@ export const ProductGrid = () => {
           rows={productData ?? []}
           columns={columns}
           pageSize={5}
-          getRowId={(row) => row.variantId} // Ensure the id field is used for row identification
+          getRowId={(row) => row.productId} // Ensure the id field is used for row identification
           checkboxSelection={true}
           doubleClickFn={(row) => {
             const editableProduct = {
@@ -142,20 +108,17 @@ export const ProductGrid = () => {
               material: row.material,
               productType: row.productType,
               frameType: "", // load if available
-              image: row.image,
             };
 
-            const variants = [
-              {
-                variantId: row.variantId,
-                inStock: row.inStock,
-                frameColor: row.frameColor,
-                price: row.price,
-                size: Number(row.size),
-                hidden: false,
-                images: [], // load if needed
-              },
-            ];
+            const variants = row.variant.map((variant) => ({
+              variantId: variant.variantId,
+              inStock: variant.inStock,
+              frameColor: variant.frameColor,
+              price: variant.price,
+              size: variant.size,
+              hidden: variant.hidden ?? false,
+              images: variant.images ?? [],
+            }));
 
             setSelectedProduct({ productData: editableProduct, variants });
             setOpenEditForm(true);

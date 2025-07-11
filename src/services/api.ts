@@ -17,6 +17,7 @@ type Item = {
     inStock: number;
     price: number;
     size: string;
+    hidden: boolean;
     images: string[];
   }>;
 };
@@ -41,7 +42,19 @@ export const api = createApi({
         },
       }),
     }),
+
+    // Mutation to create a variant
+    createVariant: builder.mutation({
+      query: ({ body, productId }) => ({
+        url: `variant/${productId}`,
+        method: "POST",
+        body,
+        headers: {
+          Authorization: `Bearer ${"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjg1NmVhMTFmMDhjZTI1NmM2NzAwNGM3In0sImlhdCI6MTc1MDYxNTQxNiwiZXhwIjoxNzUwNjE5MDE2fQ.07ByVC_zv2ZBPvGxJOU3RA7-AMQ3iJzRLEiG2uct5fM"}`, // Replace with your actual token
+        },
+      }),
+    }),
   }),
 });
 
-export const { useGetAllProductsQuery, useAddProductMutation } = api;
+export const { useGetAllProductsQuery, useAddProductMutation, useCreateVariantMutation } = api;

@@ -22,9 +22,9 @@ type VariantRow = {
   inStock: number;
   frameColor: string;
   price: number;
-  size: number;
+  size: string;
   hidden: boolean;
-  images: File[]; // Assuming images are stored as URLs
+  images: string[]; // Assuming images are stored as URLs
 };
 
 type Variant = {
@@ -32,9 +32,9 @@ type Variant = {
   inStock: number;
   frameColor: string;
   price: number;
-  size: number;
+  size: string;
   hidden: boolean;
-  images: File[]; // or string[] if URLs
+  images: string[]; // or string[] if URLs
 };
 
 type Props = {
@@ -48,7 +48,6 @@ type Props = {
     material: string;
     productType: string;
     frameType: string;
-    image: string;
   };
   variants: Variant[];
 };
@@ -69,7 +68,8 @@ const schema = yup
   .required();
 
 const cols: GridColDef[] = [
-  { field: "variantId", headerName: "ID", width: 90 },
+  { field: "id", headerName: "ID", width: 90 },
+  { field: "variantId", headerName: "Variant ID", width: 90 },
   { field: "frameColor", headerName: "Frame Color", width: 150 },
   { field: "inStock", headerName: "In Stock", width: 150 },
   { field: "price", headerName: "Price", width: 110 },
@@ -78,12 +78,9 @@ const cols: GridColDef[] = [
 ];
 
 export const UpdateItemForm = ({ productData, variants }: Props) => {
-  //   const variantVals = useSelector(
-  //     (state: RootState) => state?.form?.addVariantForm
-  //   );
   const tablerows = variants?.map((item, index) => {
     return {
-      id: item?.variantId || index,
+      id: index,
       variantId: item?.variantId ?? "",
       images: item.images,
       frameColor: item.frameColor,
@@ -112,7 +109,6 @@ export const UpdateItemForm = ({ productData, variants }: Props) => {
       productType: productData?.productType || "",
       frameType: productData?.frameType || "",
       material: productData?.material || "",
-      images: productData?.image || "",
     },
   });
 
@@ -125,24 +121,9 @@ export const UpdateItemForm = ({ productData, variants }: Props) => {
 
   const [addProduct] = useAddProductMutation();
 
-  const onSubmit = () => {
-    // const formData = new FormData();
-    // formData.append("name", data.name);
-    // formData.append("frameStyle", data.frameStyle);
-    // formData.append("description", data.description);
-    // formData.append("lens", data.lens);
-    // formData.append("gender", data.gender);
-    // formData.append("material", data.material);
-    // formData.append("productType", data.productType);
-    // formData.append("frameType", data.frameType);
-    // formData.append("variants", JSON.stringify(variantVals));
-    // data.images.forEach((file, index) => {
-    //   formData.append(`images${index}`, file);
-    // });
-    // for (const [key, value] of formData.entries()) {
-    //   console.log(key, value);
-    // }
-    // addProduct(formData)
+  const createNewProduct = (data: FormValues) => {
+    console.log("Form Data:", data);
+    // addProduct(data)
     //   .then((res) => console.log("Item added:", res))
     //   .catch((err) => console.error("Error adding item:", err));
   };
@@ -159,7 +140,7 @@ export const UpdateItemForm = ({ productData, variants }: Props) => {
   return (
     <>
       <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(createNewProduct)}>
           <div className="grid grid-cols-3 gap-4 p-4">
             <>
               <TextInput
@@ -312,7 +293,7 @@ export const UpdateItemForm = ({ productData, variants }: Props) => {
           <>
             <DialogBox
               title="Add Variant"
-              fieldform={<AddVariantForm />}
+              fieldform={<AddVariantForm productId={productData?.productId} />}
               openform={openVariantForm}
               closeform={setOpenVariantForm}
             ></DialogBox>

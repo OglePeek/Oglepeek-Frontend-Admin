@@ -1,44 +1,27 @@
 // src/redux/store.ts
+
 import { configureStore } from "@reduxjs/toolkit";
-import formReducer from "./formslice";
-import storage from "redux-persist/lib/storage"; // defaults to localStorage
-import {
-  persistReducer,
-  persistStore,
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
-} from "redux-persist";
 import { combineReducers } from "redux";
-import { api } from "../services/api"; // adjust the path
+import formReducer from "./formslice";
+import { api } from "../services/api"; // adjust path if needed
 
-const persistConfig = {
-  key: "root",
-  storage,
-  whitelist: ["form"], // only persist the form slice
-};
-
+// Combine reducers
 const rootReducer = combineReducers({
   form: formReducer,
   [api.reducerPath]: api.reducer,
 });
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
-
+// Configure store
 export const store = configureStore({
-  reducer: persistedReducer,
+  reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        ignoredPaths: ["form.addVariantForm"], // ✅ Ignore File[] in addVariantForm
+        ignoredActions: ['form/saveFormData'],
       },
-    }).concat(api.middleware), // add the api middleware
+    }).concat(api.middleware),
 });
-
-export const persistor = persistStore(store);
 
 // Types
 export type RootState = ReturnType<typeof store.getState>;
