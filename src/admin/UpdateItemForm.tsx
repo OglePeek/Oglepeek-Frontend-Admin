@@ -2,19 +2,16 @@ import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { TextInput } from "./TextInput";
-import { Button } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 import { DropdownInput } from "./DropdownInput";
 import { useState } from "react";
 import { DialogBox } from "./DialogBox";
 import { AddVariantForm } from "./AddVariantForm";
-import type { AppDispatch } from "../redux/store";
-import { resetFormData } from "../redux/formslice";
-import { useDispatch, useSelector } from "react-redux";
-import FileUploadInput from "./FileUploadInput";
-import type { RootState } from "../redux/store";
-import { useAddProductMutation } from "../services/api";
+import EditIcon from "@mui/icons-material/Edit";
+import { useUpdateProductMutation } from "../services/api";
 import { GenericDataGrid } from "./GenericDataGrid";
 import type { GridColDef } from "@mui/x-data-grid";
+import { EditVariantForm } from "./EditVariantForm";
 
 type VariantRow = {
   id: string | number; // Unique identifier for the row
@@ -61,37 +58,10 @@ const schema = yup
     lens: yup.string().required(),
     gender: yup.string().required(),
     material: yup.string().required(),
-    images: yup.string().required(),
     productType: yup.string().required(),
     frameType: yup.string().required(),
   })
   .required();
-
-const cols: GridColDef[] = [
-  {
-    field: "image",
-    headerName: "Image",
-    width: 100,
-    renderCell: (params) => (
-      <img
-        src={params.row.images?.[0] || ""}
-        alt="product"
-        style={{
-          width: 60,
-          height: 40,
-          objectFit: "cover",
-          borderRadius: 4,
-        }}
-      />
-    ),
-  },
-  { field: "variantId", headerName: "Variant ID", width: 300 },
-  { field: "frameColor", headerName: "Frame Color", width: 150 },
-  { field: "inStock", headerName: "In Stock", width: 150 },
-  { field: "price", headerName: "Price", width: 110 },
-  { field: "size", headerName: "Size", width: 110 },
-  { field: "hidden", headerName: "Hidden", width: 110 },
-];
 
 export const UpdateItemForm = ({ productData, variants }: Props) => {
   const tablerows = variants?.map((item, index) => {
@@ -107,9 +77,53 @@ export const UpdateItemForm = ({ productData, variants }: Props) => {
     };
   });
 
-  const dispatch = useDispatch<AppDispatch>();
-
   const [openVariantForm, setOpenVariantForm] = useState(false);
+  const [openEditVariantForm, setOpenEditVariantForm] = useState(false);
+
+  const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
+
+  const handleEdit = (variant: Variant) => {
+    setSelectedVariant(variant);
+    setOpenEditVariantForm(true);
+  };
+
+  const cols: GridColDef[] = [
+    {
+      field: "image",
+      headerName: "Image",
+      width: 100,
+      renderCell: (params) => (
+        <img
+          src={params.row.images?.[0] || ""}
+          alt="product"
+          style={{
+            width: 60,
+            height: 40,
+            objectFit: "cover",
+            borderRadius: 4,
+          }}
+        />
+      ),
+    },
+    { field: "variantId", headerName: "Variant ID", width: 300 },
+    { field: "frameColor", headerName: "Frame Color", width: 150 },
+    { field: "inStock", headerName: "In Stock", width: 150 },
+    { field: "price", headerName: "Price", width: 110 },
+    { field: "size", headerName: "Size", width: 110 },
+    { field: "hidden", headerName: "Hidden", width: 110 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      width: 100,
+      sortable: false,
+      filterable: false,
+      renderCell: (params) => (
+        <IconButton onClick={() => handleEdit(params.row)}>
+          <EditIcon />
+        </IconButton>
+      ),
+    },
+  ];
 
   type FormValues = yup.InferType<typeof schema>;
 
@@ -131,39 +145,45 @@ export const UpdateItemForm = ({ productData, variants }: Props) => {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = methods;
 
-  const [addProduct] = useAddProductMutation();
+  const [updateProduct] = useUpdateProductMutation();
 
-  const createNewProduct = (data: FormValues) => {
-    console.log("Form Data:", data);
-    // addProduct(data)
-    //   .then((res) => console.log("Item added:", res))
-    //   .catch((err) => console.error("Error adding item:", err));
+  const updateExistingProduct = (data: FormValues) => {
+    updateProduct({ body: data })
+      .unwrap()
+      .then((res) => {
+        console.log("Product Updated:", res);
+        alert(res?.data?.message);
+      })
+      .catch((err) => {
+        console.error("Error adding item:", err);
+        alert(err?.data?.message);
+      });
   };
 
   const openDialog = () => {
     setOpenVariantForm(true);
   };
 
-  const clearForm = () => {
-    reset();
-    dispatch(resetFormData());
-  };
+  //   const clearForm = () => {
+  //     reset();
+  //     dispatch(resetFormData());
+  //   };
 
   return (
     <>
       <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(createNewProduct)}>
+        <form onSubmit={handleSubmit(updateExistingProduct)}>
           <div className="grid grid-cols-3 gap-4 p-4">
             <>
               <TextInput
-                label={"id"}
+                label={"ProductId"}
                 {...register("id")}
                 error={!!errors.id}
                 helperText={errors.id?.message}
+                slotProps={{ input: { readOnly: true } }}
               />
             </>
             <>
@@ -271,7 +291,7 @@ export const UpdateItemForm = ({ productData, variants }: Props) => {
             <>
               <TextInput
                 label={"description"}
-                name="description"
+                {...register("description")}
                 error={!!errors.description}
                 helperText={errors.description?.message}
                 multiline
@@ -284,7 +304,7 @@ export const UpdateItemForm = ({ productData, variants }: Props) => {
             </div> */}
           </div>
 
-          <div className="grid grid-cols-3 justify-items-start">
+          <div className="grid grid-cols-5 justify-items-start">
             <div className=" py-4">
               <Button variant="contained" type="button" onClick={openDialog}>
                 Add Variant
@@ -292,14 +312,14 @@ export const UpdateItemForm = ({ productData, variants }: Props) => {
             </div>
             <div className=" py-4">
               <Button variant="contained" type="submit">
-                Add Item
+                Update Product
               </Button>
             </div>
-            <div className=" py-4">
+            {/* <div className=" py-4">
               <Button variant="contained" type="button" onClick={clearForm}>
                 Clear
               </Button>
-            </div>
+            </div> */}
           </div>
         </form>
       </FormProvider>
@@ -324,10 +344,23 @@ export const UpdateItemForm = ({ productData, variants }: Props) => {
           rows={tablerows ? tablerows : []}
           columns={cols}
           pageSize={5}
-          checkboxSelection={true}
+          checkboxSelection={false}
           getRowId={(row) => row.variantId}
         />
       </div>
+
+      {openEditVariantForm && selectedVariant && (
+        <DialogBox
+          title="Edit Variant"
+          openform={openEditVariantForm}
+          closeform={setOpenEditVariantForm}
+          fieldform={
+            <EditVariantForm
+              variant={selectedVariant}
+            />
+          }
+        />
+      )}
     </>
   );
 };

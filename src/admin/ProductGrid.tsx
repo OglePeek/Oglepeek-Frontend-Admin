@@ -13,6 +13,8 @@ type ProductRow = {
   lens: string;
   gender: string;
   material: string;
+  description?: string;
+  frameType?: string;
   productType: string;
   productId: string;
   variant: Variant[];
@@ -46,6 +48,8 @@ type EditableProduct = {
 const columns: GridColDef[] = [
   { field: "productName", headerName: "Product Name", width: 180 },
   { field: "frameStyle", headerName: "Frame Style", width: 150 },
+  { field: "frameType", headerName: "Frame Type", width: 150 },
+  { field: "description", headerName: "Description", width: 150 },
   { field: "lens", headerName: "Lens", width: 120 },
   { field: "gender", headerName: "Gender", width: 100 },
   { field: "material", headerName: "Material", width: 120 },
@@ -63,7 +67,7 @@ export const ProductGrid = () => {
 
   const { data: allProducts, isLoading } = useGetAllProductsQuery();
 
-  console.log(allProducts);
+  // console.log(allProducts);
 
   const productData =
     allProducts?.map((product) => ({
@@ -74,6 +78,8 @@ export const ProductGrid = () => {
       lens: product.lens,
       gender: product.gender,
       material: product.material,
+      description: product.description,
+      frameType: product.frameType,
       productType: product.productType,
       variant: product.variants.map((variant) => ({
         variantId: variant._id,
@@ -96,18 +102,18 @@ export const ProductGrid = () => {
           columns={columns}
           pageSize={5}
           getRowId={(row) => row.productId} // Ensure the id field is used for row identification
-          checkboxSelection={true}
+          checkboxSelection={false}
           doubleClickFn={(row) => {
             const editableProduct = {
               productId: row.productId,
               name: row.productName,
               frameStyle: row.frameStyle,
-              description: "", // load if available
+              description: row.description ?? "",
               lens: row.lens,
               gender: row.gender,
               material: row.material,
               productType: row.productType,
-              frameType: "", // load if available
+              frameType: row.frameType ?? "",
             };
 
             const variants = row.variant.map((variant) => ({
@@ -128,7 +134,7 @@ export const ProductGrid = () => {
 
       {openEditForm && selectedProduct ? (
         <DialogBox
-          title="Add Variant"
+          title="Update Product or Add Variant"
           fieldform={
             <UpdateItemForm
               productData={selectedProduct.productData}
