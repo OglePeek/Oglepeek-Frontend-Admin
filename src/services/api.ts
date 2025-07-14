@@ -8,6 +8,8 @@ type Item = {
   price: number;
   lens: string;
   gender: string;
+  description?: string;
+  frameType?: string; // Optional if not used
   material: string;
   productType: string;
   frameStyle: string;
@@ -57,6 +59,24 @@ export const api = createApi({
         // },
       }),
     }),
+
+    // Mutation to update a product
+    updateProduct: builder.mutation({
+      query: ({ body }) => ({
+        url: `product`,
+        method: "POST",
+        body,
+      }),
+    }),
+
+    // Mutation to update a variant
+    updateVariant: builder.mutation({
+      query: ({ body, variantId }) => ({
+        url: `variant/${variantId}`,
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
@@ -64,4 +84,6 @@ export const {
   useGetAllProductsQuery,
   useAddProductMutation,
   useCreateVariantMutation,
+  useUpdateProductMutation,
+  useUpdateVariantMutation,
 } = api;
